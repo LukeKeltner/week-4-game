@@ -1,9 +1,19 @@
+//Electric Type = 0
+//Fire Type = 1
+//Water Type = 2
+//Grass Type = 3
+
+
+
+
+
+
 $(document).ready(function() 
 {
-	var fighter1 = new fighter("Pikachu", 1900, 250, 50, 'assets/images/pikachu.jpg', 0, 'lighting')
-	var fighter2 = new fighter("Charmander", 1950, 200, 50, 'assets/images/charmander.jpg', 1, 'fire')
-	var fighter3 = new fighter("Squirtle", 2000, 150, 50, 'assets/images/squirtle.jpg', 2, 'water')
-	var fighter4 = new fighter("Bulbasaur", 2050, 100, 50, 'assets/images/bulbasaur.jpg', 3, 'grass')
+	var fighter1 = new fighter("Pikachu", 2000, 100, 50, 'assets/images/pikachu.jpg', 0, 0, 2, [3])
+	var fighter2 = new fighter("Charmander", 2000, 100, 50, 'assets/images/charmander.jpg', 1, 1, 3 , [2])
+	var fighter3 = new fighter("Squirtle", 2000, 100, 50, 'assets/images/squirtle.jpg', 2, 2, 1, [0, 3])
+	var fighter4 = new fighter("Bulbasaur", 2000, 100, 50, 'assets/images/bulbasaur.jpg', 3, 3, 2 , [1])
 
 	var userNeedsToPickFighter = true;
 	var userNeedsToPickEnemy = true;
@@ -18,8 +28,9 @@ $(document).ready(function()
 	enemies.push(fighter3)
 	enemies.push(fighter4)
 
+	var newColAttack;
 
-	function fighter(name, hp, attack, counter, imgsrc, imgclass, type)
+	function fighter(name, hp, attack, counter, imgsrc, imgclass, type, strongAgainst, weakAgainst)
 	{
 		this.name = name;
 		this.hp = hp;
@@ -28,6 +39,8 @@ $(document).ready(function()
 		this.imgsrc = imgsrc;
 		this.imgclass = imgclass;
 		this.type = type;
+		this.strongAgainst = strongAgainst;
+		this.weakAgainst = weakAgainst;
 	}
 
 	function fighterDiv(fighter, x)
@@ -104,7 +117,7 @@ $(document).ready(function()
 	{
 		clearRow('.row1')
 		var newCol1 = $("<div class=\"col-md-4 text-center\">")
-		var newColAttack = $("<div class=\"col-md-4 text-center\">")
+		newColAttack = $("<div class=\"col-md-4 text-center\">")
 		var newCol2 = $("<div class=\"col-md-4 text-center\">")
 		$('.row1').append(newCol1)
 		$('.row1').append(newColAttack)
@@ -117,6 +130,10 @@ $(document).ready(function()
 		var attackButton = $('#attack')
 		newColAttack.append(attackButton)
 		attackButton.show()
+
+		var attackResult = $('<h2>')
+		attackResult.attr('class', 'attackResult')
+		newColAttack.append(attackResult)
 
 
 		var newDiv2 = $("<div>")
@@ -140,6 +157,29 @@ $(document).ready(function()
 		{
 			$(imgClass).hide();
 		});
+	}
+
+	function normalAttack()
+	{
+		usersFighter.hp = usersFighter.hp - currentEmeny.counter;
+		currentEmeny.hp = currentEmeny.hp - usersFighter.attack
+		usersFighter.attack = usersFighter.attack + 12;
+	}
+
+	function superEffective()
+	{
+		usersFighter.hp = usersFighter.hp - currentEmeny.counter/2;
+		currentEmeny.hp = currentEmeny.hp - 2*usersFighter.attack
+		usersFighter.attack = usersFighter.attack + 24;
+		$('.attackResult').html('It\'s Super Effective!')
+	}
+
+	function notVeryrEffective()
+	{
+		usersFighter.hp = usersFighter.hp - 2*currentEmeny.counter;
+		currentEmeny.hp = currentEmeny.hp - usersFighter.attack/2
+		usersFighter.attack = usersFighter.attack + 6;
+		$('.attackResult').html('It\'s Not Very Effective!')
 	}
 
 	populateEnemies(".row1", enemies)
@@ -206,9 +246,30 @@ $(document).ready(function()
 	{
 		if (!userNeedsToPickEnemy)
 		{
-			usersFighter.hp = usersFighter.hp - currentEmeny.counter;
-			currentEmeny.hp = currentEmeny.hp - usersFighter.attack
-			usersFighter.attack = usersFighter.attack + 12;
+			for (var weakness = 0; weakness < currentEmeny.weakAgainst.length; weakness++)
+			{
+				if (usersFighter.type == currentEmeny.weakAgainst[weakness])
+				{
+					superEffective();
+					console.log('SUPER EFFECTIVE!')
+					break;
+				}
+
+				else if (usersFighter.weakAgainst[weakness] == currentEmeny.type)
+				{
+					notVeryrEffective()
+					console.log('NOT VERY EFFECTIVE!')
+					break;
+				}
+
+				else
+				{
+					normalAttack()
+					console.log('NORMAL ATTACK')
+					break;
+				}
+			}
+
 			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
 			updateUser.attr("class", "fighterDiv usersFighter")
 			$('.usersFighter').html(updateUser)
@@ -227,6 +288,7 @@ $(document).ready(function()
 				}
 
 				userNeedsToPickEnemy = true;
+				clearRow('.attackResult')
 				clearRow('.currentEmeny');
 				
 
@@ -239,7 +301,7 @@ $(document).ready(function()
 
 			if (usersFighter.hp <= 0)
 			{
-				clearRow('.youlose');
+				clearRow(newColAttack);
 				instructions.html("You've Lost!")
 			}
 		}
