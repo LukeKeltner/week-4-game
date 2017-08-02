@@ -1,9 +1,9 @@
 $(document).ready(function() 
 {
-	var fighter1 = new fighter("Pikachu", 1000, 100, 200, 50, 'assets/images/pikachu.jpg', 0)
-	var fighter2 = new fighter("Charmander", 2000, 100, 200, 50, 'assets/images/charmander.jpg', 1)
-	var fighter3 = new fighter("Squirtle", 1500, 100, 200, 50, 'assets/images/squirtle.jpg', 2)
-	var fighter4 = new fighter("Bulbasaur", 500, 100, 200, 50, 'assets/images/bulbasaur.jpg', 3)
+	var fighter1 = new fighter("Pikachu", 1900, 250, 50, 'assets/images/pikachu.jpg', 0, 'lighting')
+	var fighter2 = new fighter("Charmander", 1950, 200, 50, 'assets/images/charmander.jpg', 1, 'fire')
+	var fighter3 = new fighter("Squirtle", 2000, 150, 50, 'assets/images/squirtle.jpg', 2, 'water')
+	var fighter4 = new fighter("Bulbasaur", 2050, 100, 50, 'assets/images/bulbasaur.jpg', 3, 'grass')
 
 	var userNeedsToPickFighter = true;
 	var userNeedsToPickEnemy = true;
@@ -19,15 +19,15 @@ $(document).ready(function()
 	enemies.push(fighter4)
 
 
-	function fighter(name, hp, attack, defend, counter, imgsrc, imgclass)
+	function fighter(name, hp, attack, counter, imgsrc, imgclass, type)
 	{
 		this.name = name;
 		this.hp = hp;
 		this.attack = attack;
-		this.defend = defend;
 		this.counter = counter;
 		this.imgsrc = imgsrc;
 		this.imgclass = imgclass;
+		this.type = type;
 	}
 
 	function fighterDiv(fighter, x)
@@ -122,6 +122,18 @@ $(document).ready(function()
 		$('.currentEmeny').append(fighterDiv(currentEmeny, currentEmeny.imgclass))
 	}
 
+	function hoverTypesInfo(textClass, imgClass)
+	{
+		$(textClass).hover(function() 
+	    {
+		    $(imgClass).show();    
+		},
+
+		function()
+		{
+			$(imgClass).hide();
+		});
+	}
 
 	populateEnemies(".row1", enemies)
 
@@ -131,18 +143,23 @@ $(document).ready(function()
 		{
 			var clicked = event.srcElement.className
 			console.log(event)
+			console.log(event.srcElement.tagName)
 			console.log(event.srcElement.className)
 
-			for (var i=0; i<enemies.length; i++)
+			if (event.srcElement.tagName === 'IMG')
 			{
-				if (clicked == i)
+
+				for (var i=0; i<enemies.length; i++)
 				{
-					usersFighter = enemies[i];
-					userNeedsToPickFighter = false;
-					enemies.splice(i, 1);
-					placeUser();
-					populateEnemies('.row2', enemies, true)
-					instructions.html('Pick a Pokemon to Fight!')
+					if (clicked == i)
+					{
+						usersFighter = enemies[i];
+						userNeedsToPickFighter = false;
+						enemies.splice(i, 1);
+						placeUser();
+						populateEnemies('.row2', enemies, true)
+						instructions.html('Pick a Pokemon to Fight!')
+					}
 				}
 			}
 		}
@@ -156,14 +173,17 @@ $(document).ready(function()
 
 			for (var i=0; i<enemies.length; i++)
 			{
-				if (clicked == i)
+				if (event.srcElement.tagName === 'IMG')
 				{
-					currentEmeny = enemies[i]
-					userNeedsToPickEnemy = false;
-					enemies.splice(i, 1);
-					getCurrentEnemy()
-					populateEnemies('.row2', enemies, true)
-					instructions.html('Fight '+currentEmeny.name+'!')
+					if (clicked == i)
+					{
+						currentEmeny = enemies[i]
+						userNeedsToPickEnemy = false;
+						enemies.splice(i, 1);
+						getCurrentEnemy()
+						populateEnemies('.row2', enemies, true)
+						instructions.html('Fight '+currentEmeny.name+'!')
+					}
 				}
 			}
 
@@ -182,7 +202,9 @@ $(document).ready(function()
 			usersFighter.hp = usersFighter.hp - currentEmeny.counter;
 			currentEmeny.hp = currentEmeny.hp - usersFighter.attack
 			usersFighter.attack = usersFighter.attack + 12;
-			$('.usersFighter').html(fighterDiv(usersFighter, usersFighter.imgclass))
+			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
+			updateUser.attr("class", "fighterDiv usersFighter")
+			$('.usersFighter').html(updateUser)
 			$('.currentEmeny').html(fighterDiv(currentEmeny, currentEmeny.imgclass))
 
 			if (currentEmeny.hp <= 0 && usersFighter.hp >0)
@@ -223,8 +245,23 @@ $(document).ready(function()
 
 	function()
 	{
-	    $(this).css("border", "4px solid purple");
+	    $(this).css("border", "4px solid black");
     });
+
+    $(".head").hover(function() 
+    {
+	    $(".typesRow").show();    
+	},
+
+	function()
+	{
+		$(".typesRow").hide();
+	});
+
+	hoverTypesInfo('.electric', '.typeImgElectric')
+	hoverTypesInfo('.fire', '.typeImgFire')
+	hoverTypesInfo('.water', '.typeImgWater')
+	hoverTypesInfo('.grass', '.typeImgGrass')
 
 });
 
