@@ -246,30 +246,54 @@ $(document).ready(function()
 	{
 		if (!userNeedsToPickEnemy)
 		{
+			var attackHappened = false;
+
 			for (var weakness = 0; weakness < currentEmeny.weakAgainst.length; weakness++)
-			{
-				if (usersFighter.type == currentEmeny.weakAgainst[weakness])
+			{	
+				console.log(usersFighter.name+" has weakness "+usersFighter.weakAgainst[weakness])
+				console.log(currentEmeny.name+" has type "+currentEmeny.type)
+				if (usersFighter.type === currentEmeny.weakAgainst[weakness])
 				{
 					superEffective();
+					attackHappened = true;
 					console.log('SUPER EFFECTIVE!')
 					break;
 				}
 
-				else if (usersFighter.weakAgainst[weakness] == currentEmeny.type)
+				else if (usersFighter.weakAgainst[weakness] === currentEmeny.type)
 				{
+					console.log(usersFighter.name+" has weakness "+usersFighter.weakAgainst[weakness])
+					console.log(currentEmeny.name+" has type "+currentEmeny.type)
 					notVeryrEffective()
+					attackHappened = true;
 					console.log('NOT VERY EFFECTIVE!')
-					break;
-				}
-
-				else
-				{
-					normalAttack()
-					console.log('NORMAL ATTACK')
 					break;
 				}
 			}
 
+			if (!attackHappened)
+			{
+				for (var weakness = 0; weakness < usersFighter.weakAgainst.length; weakness++)
+				{
+					if (usersFighter.weakAgainst[weakness] === currentEmeny.type)
+					{
+						console.log(usersFighter.name+" has weakness "+usersFighter.weakAgainst[weakness])
+						console.log(currentEmeny.name+" has type "+currentEmeny.type)
+						notVeryrEffective()
+						attackHappened = true;
+						console.log('NOT VERY EFFECTIVE!')
+						break;
+					}
+				}
+			}
+
+			if (!attackHappened)
+			{
+				normalAttack()
+				console.log('NORMAL ATTACK')
+			}
+
+	
 			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
 			updateUser.attr("class", "fighterDiv usersFighter")
 			$('.usersFighter').html(updateUser)
