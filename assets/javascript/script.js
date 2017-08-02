@@ -29,6 +29,8 @@ $(document).ready(function()
 	enemies.push(fighter4)
 
 	var newColAttack;
+	var userHealthBar = $('#userHealthBar');
+	var currentEnemyHealthBar = $('#currentEnemyHealthBar');
 
 	function fighter(name, hp, attack, counter, imgsrc, imgclass, type, strongAgainst, weakAgainst)
 	{
@@ -59,6 +61,10 @@ $(document).ready(function()
 		div.attr("class", "fighterDiv")
 
 		return div;
+
+
+
+
 	}
 
 	function populateEnemies(row, array, condition)
@@ -113,7 +119,7 @@ $(document).ready(function()
 		$(row).empty();
 	}
 
-	function placeUser(fighter)
+	function placeUser()
 	{
 		clearRow('.row1')
 		var newCol1 = $("<div class=\"col-md-4 text-center\">")
@@ -126,6 +132,10 @@ $(document).ready(function()
 		var newDiv1 = $(fighterDiv(usersFighter, usersFighter.imgclass))
 		newDiv1.attr("class", "fighterDiv usersFighter")
 		newCol1.html(newDiv1)
+
+		userHealthBar.attr('max', usersFighter.hp)
+		userHealthBar.attr('value', usersFighter.hp)
+		userHealthBar.show()
 
 		var attackButton = $('#attack')
 		newColAttack.append(attackButton)
@@ -144,6 +154,9 @@ $(document).ready(function()
 	function getCurrentEnemy()
 	{
 		$('.currentEmeny').append(fighterDiv(currentEmeny, currentEmeny.imgclass))
+		currentEnemyHealthBar.attr('max', currentEmeny.hp)
+		currentEnemyHealthBar.attr('value', currentEmeny.hp)
+		currentEnemyHealthBar.show()
 	}
 
 	function hoverTypesInfo(textClass, imgClass)
@@ -247,6 +260,7 @@ $(document).ready(function()
 		if (!userNeedsToPickEnemy)
 		{
 			var attackHappened = false;
+			$('#userHealthBar').attr('value', '70');
 
 			for (var weakness = 0; weakness < currentEmeny.weakAgainst.length; weakness++)
 			{	
@@ -293,7 +307,8 @@ $(document).ready(function()
 				console.log('NORMAL ATTACK')
 			}
 
-	
+			userHealthBar.attr('value', usersFighter.hp)
+			currentEnemyHealthBar.attr('value', currentEmeny.hp)
 			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
 			updateUser.attr("class", "fighterDiv usersFighter")
 			$('.usersFighter').html(updateUser)

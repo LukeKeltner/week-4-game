@@ -46,6 +46,12 @@ h2
 	/* background: rgba(0, 0, 0, .75); */
 }
 
+.fighterDiv .pokemonImage
+{
+	width:100%;
+
+}
+
 .usersFighter
 {
 	/* border:1px solid green; */
@@ -133,4 +139,16 @@ img
 .attackResult
 {
 	color:black;
+}
+
+#userHealthBar
+{
+	display:none;
+	width:100%;
+}
+
+#currentEnemyHealthBar
+{
+	display:none;
+	width:100%;
 }
