@@ -9,7 +9,9 @@ $(document).ready(function()
 	var userNeedsToPickEnemy = true;
 	var usersFighter;
 	var currentEmeny;
-	var enemies = []
+	var enemies = [];
+
+	var instructions = $('.instructions');
 
 	enemies.push(fighter1)
 	enemies.push(fighter2)
@@ -33,7 +35,7 @@ $(document).ready(function()
 		var div = $('<div>')
 		var name = $('<p>'+fighter.name+'</p>')
 		var img = $('<img src=\"'+fighter.imgsrc+'\" style=\"width:180px;\"/>')
-		var hp = $('<p>'+fighter.hp+'</p>')
+		var hp = $('<p>hp: '+fighter.hp+'</p>')
 
 		div.append(name)
 		div.append(img)
@@ -46,23 +48,50 @@ $(document).ready(function()
 		return div;
 	}
 
-	function populateEnemies(row, array)
+	function populateEnemies(row, array, condition)
 	{
-		var colWidth = 12/array.length; 
-
-		clearRow(row)
-
-		for (var i=0; i<array.length; i++)
+		if (!condition)
 		{
-			colWidth = 12/array.length
-			colString = "col-md-"+colWidth
-			colClass = "class = \""+colString+" text-center\""
-			divString = "<div "+colClass+">"
-			var newCol = $(divString)
-			var newDiv = $(fighterDiv(array[i], i))
-			newDiv.attr("class", "fighterDiv fighterDiv"+i)
-			$(row).append(newCol);
-			$(newCol).html(newDiv);
+			var colWidth = 12/(array.length); 
+			clearRow(row)
+
+			for (var i=0; i<array.length; i++)
+			{
+				colString = "col-md-"+colWidth
+				colClass = "class = \""+colString+" text-center\""
+				divString = "<div "+colClass+">"
+				var newCol = $(divString)
+				var newDiv = $(fighterDiv(array[i], i))
+				newDiv.attr("class", "fighterDiv fighterDiv"+i)
+				$(row).append(newCol);
+				$(newCol).html(newDiv);
+			}
+		}
+
+		else
+		{	
+			clearRow(row)
+			var colWidth = 12/(array.length+1); 
+			var colString = "col-md-"+colWidth
+			var colClass = "class = \""+colString+" text-center\""
+			var divString = "<div "+colClass+">"
+
+			var firstCol = $(divString)
+			var fightEnemies = $('<h2>Your Enemies!</h2>')
+
+			fightEnemies.attr("class", "fightEnemies")
+
+			$(row).append(firstCol);
+			$(firstCol).html(fightEnemies);
+
+			for (var i=0; i<array.length; i++)
+			{
+				var newCol = $(divString)
+				var newDiv = $(fighterDiv(array[i], i))
+				newDiv.attr("class", "fighterDiv fighterDiv"+i)
+				$(row).append(newCol);
+				$(newCol).html(newDiv);
+			}
 		}
 	}
 
@@ -95,12 +124,6 @@ $(document).ready(function()
 
 
 	populateEnemies(".row1", enemies)
-/*	for (var i=0; i<enemies.length; i++)
-	{
-		console.log(enemies[i].name+" imgclass is "+enemies[i].imgclass)
-		enemies[i].imgclass = i;
-		console.log(enemies[i].name+" imgclass is "+enemies[i].imgclass)
-	}*/
 
 	$('.row1').on('click', function()
 	{
@@ -112,18 +135,14 @@ $(document).ready(function()
 
 			for (var i=0; i<enemies.length; i++)
 			{
-				//if (clicked === "fighterDiv fighterDiv"+i)
-				console.log('clicked = '+clicked+" and i = "+i)
 				if (clicked == i)
 				{
 					usersFighter = enemies[i];
 					userNeedsToPickFighter = false;
 					enemies.splice(i, 1);
-					console.log("The User has chosen "+usersFighter.name)
-					console.log("The User's enemies are...")
-					console.log(enemies)
 					placeUser();
-					populateEnemies('.row2', enemies)
+					populateEnemies('.row2', enemies, true)
+					instructions.html('Pick a Pokemon to Fight!')
 				}
 			}
 		}
@@ -133,11 +152,6 @@ $(document).ready(function()
 	{
 		if (userNeedsToPickEnemy)
 		{
-			for (var i=0; i<enemies.length; i++)
-			{
-				$()
-			}
-
 			var clicked = event.srcElement.className
 
 			for (var i=0; i<enemies.length; i++)
@@ -147,15 +161,16 @@ $(document).ready(function()
 					currentEmeny = enemies[i]
 					userNeedsToPickEnemy = false;
 					enemies.splice(i, 1);
-					console.log("The User has chosen "+currentEmeny.name+" has the enemy")
-					console.log("The User's enemies to fight after are...")
-					console.log(enemies)
-
 					getCurrentEnemy()
-
-					populateEnemies('.row2', enemies)
-
+					populateEnemies('.row2', enemies, true)
+					instructions.html('Fight '+currentEmeny.name+'!')
 				}
+			}
+
+			if (enemies.length === 0)
+			{
+				clearRow('.fightEnemies')
+				clearRow('.row2')
 			}
 		}
 	});
@@ -170,25 +185,46 @@ $(document).ready(function()
 			$('.usersFighter').html(fighterDiv(usersFighter, usersFighter.imgclass))
 			$('.currentEmeny').html(fighterDiv(currentEmeny, currentEmeny.imgclass))
 
-			if (currentEmeny.hp <= 0)
+			if (currentEmeny.hp <= 0 && usersFighter.hp >0)
 			{
+				if (enemies.length === 1)
+				{
+					instructions.html('All you have is '+enemies[0].name+' left!')
+				}
+
+				else
+				{
+					instructions.html("Pick Another Pokemon to Fight!")
+				}
+
 				userNeedsToPickEnemy = true;
 				clearRow('.currentEmeny');
+				
 
 				if(enemies.length === 0)
 				{
 					clearRow('.youlose');
-					$('.youlose').append('YOU WIN!')
+					instructions.html("You've Won!")
 				}
 			}
 
 			if (usersFighter.hp <= 0)
 			{
 				clearRow('.youlose');
-				$('.youlose').append('YOU LOSE!')
+				instructions.html("You've Lost!")
 			}
 		}
 	});
+
+	$("img").hover(function()
+	{
+	    $(this).css("border", "4px solid green");
+	}, 
+
+	function()
+	{
+	    $(this).css("border", "4px solid purple");
+    });
 
 });
 
