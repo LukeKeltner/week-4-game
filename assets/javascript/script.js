@@ -103,14 +103,21 @@ $(document).ready(function()
 	function placeUser(fighter)
 	{
 		clearRow('.row1')
-		var newCol1 = $("<div class=\"col-md-6 text-center\">")
-		var newCol2 = $("<div class=\"col-md-6 text-center\">")
+		var newCol1 = $("<div class=\"col-md-4 text-center\">")
+		var newColAttack = $("<div class=\"col-md-4 text-center\">")
+		var newCol2 = $("<div class=\"col-md-4 text-center\">")
 		$('.row1').append(newCol1)
+		$('.row1').append(newColAttack)
 		$('.row1').append(newCol2)
 
 		var newDiv1 = $(fighterDiv(usersFighter, usersFighter.imgclass))
 		newDiv1.attr("class", "fighterDiv usersFighter")
 		newCol1.html(newDiv1)
+
+		var attackButton = $('#attack')
+		newColAttack.append(attackButton)
+		attackButton.show()
+
 
 		var newDiv2 = $("<div>")
 		newDiv2.attr("class", "fighterDiv currentEmeny")
