@@ -1,0 +1,23 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    font-size:30px;
+}
+
+.row1
+{
+
+}
+
+.row2
+{
+
+}
+
+.fighterDiv
+{
+	color:red;
+	border:1px solid green;
+	width:200px;
+	margin:0 auto;
+}
