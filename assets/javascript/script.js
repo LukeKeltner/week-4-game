@@ -12,13 +12,13 @@ $(document).ready(function()
 {
 	var fighter1 = new fighter("Pikachu", 2000, 100, 50, 'assets/images/pikachu.jpg', 0, 0, 2, [3])
 	var fighter2 = new fighter("Charmander", 2000, 100, 50, 'assets/images/charmander.jpg', 1, 1, 3 , [2])
-	var fighter3 = new fighter("Squirtle", 2000, 100, 50, 'assets/images/squirtle.jpg', 2, 2, 1, [0, 3])
-	var fighter4 = new fighter("Bulbasaur", 2000, 100, 50, 'assets/images/bulbasaur.jpg', 3, 3, 2 , [1])
+	var fighter3 = new fighter("Squirtle", 2400, 100, 50, 'assets/images/squirtle.jpg', 2, 2, 1, [0, 3])
+	var fighter4 = new fighter("Bulbasaur", 1800, 100, 50, 'assets/images/bulbasaur.jpg', 3, 3, 2 , [1])
 
 	var userNeedsToPickFighter = true;
 	var userNeedsToPickEnemy = true;
 	var usersFighter;
-	var currentEmeny;
+	var currentEnemy;
 	var enemies = [];
 
 	var instructions = $('.instructions');
@@ -27,6 +27,11 @@ $(document).ready(function()
 	enemies.push(fighter2)
 	enemies.push(fighter3)
 	enemies.push(fighter4)
+
+	var userMaxHP;
+	var currentEnemyMaxHP;
+
+	var typeButtonClicked = false;
 
 	var newColAttack;
 	var userHealthBar = $('#userHealthBar');
@@ -50,7 +55,7 @@ $(document).ready(function()
 		var div = $('<div>')
 		var name = $('<p>'+fighter.name+'</p>')
 		var img = $('<img src=\"'+fighter.imgsrc+'\" style=\"width:180px;\"/>')
-		var hp = $('<p>hp: '+fighter.hp+'</p>')
+		var hp = $('<p>hp: '+fighter.hp.toFixed(2)+'</p>')
 
 		div.append(name)
 		div.append(img)
@@ -61,10 +66,6 @@ $(document).ready(function()
 		div.attr("class", "fighterDiv")
 
 		return div;
-
-
-
-
 	}
 
 	function populateEnemies(row, array, condition)
@@ -136,6 +137,7 @@ $(document).ready(function()
 		userHealthBar.attr('max', usersFighter.hp)
 		userHealthBar.attr('value', usersFighter.hp)
 		userHealthBar.show()
+		userMaxHP = usersFighter.hp;
 
 		var attackButton = $('#attack')
 		newColAttack.append(attackButton)
@@ -145,25 +147,53 @@ $(document).ready(function()
 		attackResult.attr('class', 'attackResult')
 		newColAttack.append(attackResult)
 
+		var userMultiplier = $('<h2>')
+		userMultiplier.attr('class', 'userMultiplier')
+		var enemyMultiplier = $('<h2>')
+		enemyMultiplier.attr('class', 'enemyMultiplier')
 
 		var newDiv2 = $("<div>")
-		newDiv2.attr("class", "fighterDiv currentEmeny")
+		newDiv2.attr("class", "fighterDiv currentEnemy")
 		newCol2.html(newDiv2)
+
+		var newCon = $('<div>')
+		newCon.attr('class', 'container-fluid')
+
+		var newRow = $('<div>')
+		newRow.attr('class', 'row')
+
+		var newColNested1 = $("<div class=\"col-md-6 text-center\">")
+		var newColNested2 = $("<div class=\"col-md-6 text-center\">")
+
+		newColNested1.append(userMultiplier)
+		newColNested2.append(enemyMultiplier)
+
+		newRow.append(newColNested1)
+		newRow.append(newColNested2)
+
+		newCon.append(newRow)
+
+		newColAttack.append(newCon)
+
+
 	}
 
 	function getCurrentEnemy()
 	{
-		$('.currentEmeny').append(fighterDiv(currentEmeny, currentEmeny.imgclass))
-		currentEnemyHealthBar.attr('max', currentEmeny.hp)
-		currentEnemyHealthBar.attr('value', currentEmeny.hp)
+		var enemyFighterDiv = fighterDiv(currentEnemy, currentEnemy.imgclass)
+		$('.currentEnemy').append(enemyFighterDiv)
+		$(enemyFighterDiv).attr("class", "fighterDiv currentEnemy")
+		currentEnemyHealthBar.attr('max', currentEnemy.hp)
+		currentEnemyHealthBar.attr('value', currentEnemy.hp)
 		currentEnemyHealthBar.show()
+		currentEnemyMaxHP = currentEnemy.hp;
 	}
 
 	function hoverTypesInfo(textClass, imgClass)
 	{
 		$(textClass).hover(function() 
 	    {
-		    $(imgClass).show();    
+		    $(imgClass).fadeIn();    
 		},
 
 		function()
@@ -174,25 +204,41 @@ $(document).ready(function()
 
 	function normalAttack()
 	{
-		usersFighter.hp = usersFighter.hp - currentEmeny.counter;
-		currentEmeny.hp = currentEmeny.hp - usersFighter.attack
+		var multiplier1 = Math.random().toFixed(2);
+		var multiplier2 = Math.random().toFixed(2);
+
+		usersFighter.hp = usersFighter.hp - multiplier2*currentEnemy.counter;
+		currentEnemy.hp = currentEnemy.hp - multiplier1*usersFighter.attack
 		usersFighter.attack = usersFighter.attack + 12;
+		$('.attackResult').html('Normal Attack!')
+		$('.userMultiplier').html(usersFighter.name+" damage x"+multiplier1)
+		$('.enemyMultiplier').html(currentEnemy.name+" damage x"+multiplier2)
 	}
 
 	function superEffective()
 	{
-		usersFighter.hp = usersFighter.hp - currentEmeny.counter/2;
-		currentEmeny.hp = currentEmeny.hp - 2*usersFighter.attack
+		var multiplier1 = Math.random().toFixed(2);
+		var multiplier2 = Math.random().toFixed(2);
+
+		usersFighter.hp = usersFighter.hp - multiplier2*currentEnemy.counter/2;
+		currentEnemy.hp = currentEnemy.hp - multiplier1*2*usersFighter.attack
 		usersFighter.attack = usersFighter.attack + 24;
 		$('.attackResult').html('It\'s Super Effective!')
+		$('.userMultiplier').html(usersFighter.name+" damage x"+multiplier1)
+		$('.enemyMultiplier').html(currentEnemy.name+" damage x"+multiplier2)
 	}
 
 	function notVeryrEffective()
 	{
-		usersFighter.hp = usersFighter.hp - 2*currentEmeny.counter;
-		currentEmeny.hp = currentEmeny.hp - usersFighter.attack/2
+		var multiplier1 = Math.random().toFixed(2);
+		var multiplier2 = Math.random().toFixed(2);
+
+		usersFighter.hp = usersFighter.hp - multiplier2*2*currentEnemy.counter;
+		currentEnemy.hp = currentEnemy.hp - multiplier1*usersFighter.attack/2
 		usersFighter.attack = usersFighter.attack + 6;
 		$('.attackResult').html('It\'s Not Very Effective!')
+		$('.userMultiplier').html(usersFighter.name+" damage x"+multiplier1)
+		$('.enemyMultiplier').html(currentEnemy.name+" damage x"+multiplier2)
 	}
 
 	populateEnemies(".row1", enemies)
@@ -237,12 +283,12 @@ $(document).ready(function()
 				{
 					if (clicked == i)
 					{
-						currentEmeny = enemies[i]
+						currentEnemy = enemies[i]
 						userNeedsToPickEnemy = false;
 						enemies.splice(i, 1);
 						getCurrentEnemy()
 						populateEnemies('.row2', enemies, true)
-						instructions.html('Fight '+currentEmeny.name+'!')
+						instructions.html('Fight '+currentEnemy.name+'!')
 					}
 				}
 			}
@@ -260,27 +306,20 @@ $(document).ready(function()
 		if (!userNeedsToPickEnemy)
 		{
 			var attackHappened = false;
-			$('#userHealthBar').attr('value', '70');
 
-			for (var weakness = 0; weakness < currentEmeny.weakAgainst.length; weakness++)
+			for (var weakness = 0; weakness < currentEnemy.weakAgainst.length; weakness++)
 			{	
-				console.log(usersFighter.name+" has weakness "+usersFighter.weakAgainst[weakness])
-				console.log(currentEmeny.name+" has type "+currentEmeny.type)
-				if (usersFighter.type === currentEmeny.weakAgainst[weakness])
+				if (usersFighter.type === currentEnemy.weakAgainst[weakness])
 				{
 					superEffective();
 					attackHappened = true;
-					console.log('SUPER EFFECTIVE!')
 					break;
 				}
 
-				else if (usersFighter.weakAgainst[weakness] === currentEmeny.type)
+				else if (usersFighter.weakAgainst[weakness] === currentEnemy.type)
 				{
-					console.log(usersFighter.name+" has weakness "+usersFighter.weakAgainst[weakness])
-					console.log(currentEmeny.name+" has type "+currentEmeny.type)
 					notVeryrEffective()
 					attackHappened = true;
-					console.log('NOT VERY EFFECTIVE!')
 					break;
 				}
 			}
@@ -289,13 +328,10 @@ $(document).ready(function()
 			{
 				for (var weakness = 0; weakness < usersFighter.weakAgainst.length; weakness++)
 				{
-					if (usersFighter.weakAgainst[weakness] === currentEmeny.type)
+					if (usersFighter.weakAgainst[weakness] === currentEnemy.type)
 					{
-						console.log(usersFighter.name+" has weakness "+usersFighter.weakAgainst[weakness])
-						console.log(currentEmeny.name+" has type "+currentEmeny.type)
 						notVeryrEffective()
 						attackHappened = true;
-						console.log('NOT VERY EFFECTIVE!')
 						break;
 					}
 				}
@@ -304,17 +340,25 @@ $(document).ready(function()
 			if (!attackHappened)
 			{
 				normalAttack()
-				console.log('NORMAL ATTACK')
 			}
 
 			userHealthBar.attr('value', usersFighter.hp)
-			currentEnemyHealthBar.attr('value', currentEmeny.hp)
+			currentEnemyHealthBar.attr('value', currentEnemy.hp)
+
+			if (usersFighter.hp/userMaxHP <= 0.5)
+			{
+				userHealthBar.css('background', 'yellow');
+			}
+
 			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
 			updateUser.attr("class", "fighterDiv usersFighter")
-			$('.usersFighter').html(updateUser)
-			$('.currentEmeny').html(fighterDiv(currentEmeny, currentEmeny.imgclass))
 
-			if (currentEmeny.hp <= 0 && usersFighter.hp >0)
+			var enemyFighterDiv = fighterDiv(currentEnemy, currentEnemy.imgclass)
+			enemyFighterDiv.attr("class", "fighterDiv currentEnemy")
+			$('.usersFighter').html(updateUser)
+			$('.currentEnemy').html(enemyFighterDiv)
+
+			if (currentEnemy.hp <= 0 && usersFighter.hp >0)
 			{
 				if (enemies.length === 1)
 				{
@@ -328,12 +372,13 @@ $(document).ready(function()
 
 				userNeedsToPickEnemy = true;
 				clearRow('.attackResult')
-				clearRow('.currentEmeny');
+				clearRow('.currentEnemy');
 				
 
 				if(enemies.length === 0)
 				{
 					clearRow('.youlose');
+					clearRow(newColAttack);
 					instructions.html("You've Won!")
 				}
 			}
@@ -351,19 +396,36 @@ $(document).ready(function()
 	    $(this).css("border", "4px solid green");
 	}, 
 
-	function()
-	{
-	    $(this).css("border", "4px solid black");
-    });
+		function()
+		{
+		    $(this).css("border", "4px solid black");
+	    }
+	);
 
-    $(".head").hover(function() 
+/*    $(".head").hover(function() 
     {
-	    $(".typesRow").show();    
+	    $(".typesRow").slideDown();    
 	},
 
-	function()
+		function()
+		{
+			$(".typesRow").slideUp();
+		}
+	);*/
+
+	$('#type-button').on('click', function()
 	{
-		$(".typesRow").hide();
+		if (!typeButtonClicked)
+		{
+			$(".typesRow").slideDown();
+			typeButtonClicked = true;
+		}
+		
+		else
+		{
+			$(".typesRow").slideUp();
+			typeButtonClicked = false;
+		}
 	});
 
 	hoverTypesInfo('.electric', '.typeImgElectric')
