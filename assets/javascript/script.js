@@ -10,23 +10,33 @@
 
 $(document).ready(function() 
 {
-	var fighter1 = new fighter("Pikachu", 2000, 100, 50, 'assets/images/pikachu.jpg', 0, 0, 2, [3])
-	var fighter2 = new fighter("Charmander", 2000, 100, 50, 'assets/images/charmander.jpg', 1, 1, 3 , [2])
-	var fighter3 = new fighter("Squirtle", 2400, 100, 50, 'assets/images/squirtle.jpg', 2, 2, 1, [0, 3])
-	var fighter4 = new fighter("Bulbasaur", 1800, 100, 50, 'assets/images/bulbasaur.jpg', 3, 3, 2 , [1])
+	var fighter1 = new fighter("Pikachu", 2000, 100, 50, 'assets/images/pikachu.jpg', 0, 0, 'Electric', 2, [3])
+	var fighter2 = new fighter("Charmander", 2000, 100, 50, 'assets/images/charmander.jpg', 1, 1, 'Fire', 3, [2])
+	var fighter3 = new fighter("Squirtle", 2400, 100, 50, 'assets/images/squirtle.jpg', 2, 2, 'Water', 1, [0, 3])
+	var fighter4 = new fighter("Bulbasaur", 1800, 100, 50, 'assets/images/bulbasaur.jpg', 3, 3, 'Grass', 2, [1])
 
 	var userNeedsToPickFighter = true;
 	var userNeedsToPickEnemy = true;
 	var usersFighter;
 	var currentEnemy;
+	var fighterArray = [];
 	var enemies = [];
 
 	var instructions = $('.instructions');
 
-	enemies.push(fighter1)
-	enemies.push(fighter2)
-	enemies.push(fighter3)
-	enemies.push(fighter4)
+	fighterArray.push(fighter1)
+	fighterArray.push(fighter2)
+	fighterArray.push(fighter3)
+	fighterArray.push(fighter4)
+
+	//Putthing the Pokemon in random order
+	for (var i=0; i<fighterArray.length; i++)
+	{
+		var r = Math.floor(Math.random()*fighterArray.length)
+		enemies.push(fighterArray[r])
+		fighterArray.splice(r, 1)
+		i = i - 1
+	}
 
 	var userMaxHP;
 	var currentEnemyMaxHP;
@@ -37,7 +47,7 @@ $(document).ready(function()
 	var userHealthBar = $('#userHealthBar');
 	var currentEnemyHealthBar = $('#currentEnemyHealthBar');
 
-	function fighter(name, hp, attack, counter, imgsrc, imgclass, type, strongAgainst, weakAgainst)
+	function fighter(name, hp, attack, counter, imgsrc, imgclass, type, typeName, strongAgainst, weakAgainst)
 	{
 		this.name = name;
 		this.hp = hp;
@@ -46,16 +56,55 @@ $(document).ready(function()
 		this.imgsrc = imgsrc;
 		this.imgclass = imgclass;
 		this.type = type;
+		this.typeName = typeName;
 		this.strongAgainst = strongAgainst;
 		this.weakAgainst = weakAgainst;
+	}
+
+	function changeHealthBarColor()
+	{
+		if (usersFighter.hp/userMaxHP <= 0.5)
+		{
+			userHealthBar.css('background-color', 'yellow')
+		}
+
+		if (currentEnemy.hp/currentEnemyMaxHP <= 0.5)
+		{
+			 currentEnemyHealthBar.css('background-color', 'yellow')
+		}
+
+		if (usersFighter.hp/userMaxHP <= 0.25)
+		{
+			userHealthBar.css('background-color', 'red')
+		}
+
+		if (currentEnemy.hp/currentEnemyMaxHP <= 0.25)
+		{
+			 currentEnemyHealthBar.css('background-color', 'red')
+		}
+
 	}
 
 	function fighterDiv(fighter, x)
 	{
 		var div = $('<div>')
-		var name = $('<p>'+fighter.name+'</p>')
-		var img = $('<img src=\"'+fighter.imgsrc+'\" style=\"width:180px;\"/>')
-		var hp = $('<p>hp: '+fighter.hp.toFixed(2)+'</p>')
+		var name; 
+		var img;
+		var hp;
+
+		if (userNeedsToPickFighter)
+		{
+			img = $('<img src=\"assets/images/pokeball.jpg\" style=\"width:180px;\"/>') 
+			name = $('<p>???</p>')
+			hp = $('<p>???</p>')
+		}
+
+		else
+		{
+			img = $('<img src=\"'+fighter.imgsrc+'\" style=\"width:180px;\"/>')
+			name = $('<p>'+fighter.name+'</p>')
+			hp = $('<p>hp: '+fighter.hp.toFixed(2)+'</p>')
+		}
 
 		div.append(name)
 		div.append(img)
@@ -134,8 +183,8 @@ $(document).ready(function()
 		newDiv1.attr("class", "fighterDiv usersFighter")
 		newCol1.html(newDiv1)
 
-		userHealthBar.attr('max', usersFighter.hp)
-		userHealthBar.attr('value', usersFighter.hp)
+		$('.user-progress-container').show()
+		userHealthBar.css('width', '100%')
 		userHealthBar.show()
 		userMaxHP = usersFighter.hp;
 
@@ -181,10 +230,11 @@ $(document).ready(function()
 	function getCurrentEnemy()
 	{
 		var enemyFighterDiv = fighterDiv(currentEnemy, currentEnemy.imgclass)
+		currentEnemyHealthBar.css('background-color', 'green')
 		$('.currentEnemy').append(enemyFighterDiv)
 		$(enemyFighterDiv).attr("class", "fighterDiv currentEnemy")
-		currentEnemyHealthBar.attr('max', currentEnemy.hp)
-		currentEnemyHealthBar.attr('value', currentEnemy.hp)
+		$('.progress-container').show()
+		currentEnemyHealthBar.css('width', '100%')
 		currentEnemyHealthBar.show()
 		currentEnemyMaxHP = currentEnemy.hp;
 	}
@@ -264,7 +314,8 @@ $(document).ready(function()
 						enemies.splice(i, 1);
 						placeUser();
 						populateEnemies('.row2', enemies, true)
-						instructions.html('Pick a Pokemon to Fight!')
+						instructions.html('Oh, '+usersFighter.name+': '+usersFighter.typeName+' type! Pick a Pokemon to Fight!')
+						$('#type-button').show()
 					}
 				}
 			}
@@ -342,13 +393,10 @@ $(document).ready(function()
 				normalAttack()
 			}
 
-			userHealthBar.attr('value', usersFighter.hp)
-			currentEnemyHealthBar.attr('value', currentEnemy.hp)
+			userHealthBar.css('width', 100*usersFighter.hp/userMaxHP+'%')
+			currentEnemyHealthBar.css('width', 100*currentEnemy.hp/currentEnemyMaxHP+'%')
 
-			if (usersFighter.hp/userMaxHP <= 0.5)
-			{
-				userHealthBar.css('background', 'yellow');
-			}
+			changeHealthBarColor()
 
 			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
 			updateUser.attr("class", "fighterDiv usersFighter")
@@ -401,17 +449,6 @@ $(document).ready(function()
 		    $(this).css("border", "4px solid black");
 	    }
 	);
-
-/*    $(".head").hover(function() 
-    {
-	    $(".typesRow").slideDown();    
-	},
-
-		function()
-		{
-			$(".typesRow").slideUp();
-		}
-	);*/
 
 	$('#type-button').on('click', function()
 	{

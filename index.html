@@ -15,7 +15,7 @@
 					<div class="container-fluid">
 						<div class="row">
 							<div class="col-md-12">
-								<h1 class="instructions">Pick a Pokemon!</h1>
+								<h1 class="instructions">Pick a Pokeball!</h1>
 								<button type="button" class="btn btn-primary btn-lg" id="type-button">Types</button>
 							</div>
 						</div>
@@ -44,11 +44,17 @@
 
 		<div class="row healthBarRow">
 			<div class="col-md-6">
-				<progress id="userHealthBar" value="40" max="100">
+				<!-- <progress id="userHealthBar" value="40" max="100"> -->
+				<div class="progress-container user-progress-container">
+					<div class="progress-bar" id="userHealthBar"></div>
+				</div>
 			</div>
 
 			<div class="col-md-6">
-				<progress id="currentEnemyHealthBar" value="40" max="100">
+				<!-- <progress id="currentEnemyHealthBar" value="40" max="100"> -->
+				<div class="progress-container enemy-progress-container">
+					<div class="progress-bar" id="currentEnemyHealthBar"></div>
+				</div>
 			</div>
 		</div>
 
