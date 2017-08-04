@@ -42,6 +42,7 @@ $(document).ready(function()
 	var currentEnemyMaxHP;
 
 	var typeButtonClicked = false;
+	var revealPokemon = true
 
 	var newColAttack;
 	var userHealthBar = $('#userHealthBar');
@@ -68,28 +69,32 @@ $(document).ready(function()
 		if (usersFighter.hp/userMaxHP <= 0.5)
 		{
 			userHealthBar.css('background-color', 'yellow')
+			userHealthBar.css('color', 'black')
 		}
 
 		if (currentEnemy.hp/currentEnemyMaxHP <= 0.5)
 		{
 			 currentEnemyHealthBar.css('background-color', 'yellow')
+			 currentEnemyHealthBar.css('color', 'black')
 		}
 
 		if (usersFighter.hp/userMaxHP <= 0.25)
 		{
 			userHealthBar.css('background-color', 'red')
+			userHealthBar.css('color', 'white')
 		}
 
 		if (currentEnemy.hp/currentEnemyMaxHP <= 0.25)
 		{
 			 currentEnemyHealthBar.css('background-color', 'red')
+			 currentEnemyHealthBar.css('color', 'white')
 		}
 
 	}
 
 	function fighterDiv(fighter, x)
 	{
-		var div = $('<div>')
+		var div = $('<div style=\'position:relative\'>')
 		var name; 
 		var img;
 		var hp;
@@ -99,6 +104,38 @@ $(document).ready(function()
 			img = $('<img src=\"assets/images/pokeball.jpg\" style=\"width:180px;\"/>') 
 			name = $('<p>???</p>')
 			hp = $('<p>???</p>')
+
+			div.append(name)
+			div.append(img)
+			div.append(hp)
+
+			fighter.imgclass = x
+			img.attr("class", fighter.imgclass)
+			div.attr("class", "fighterDiv")
+
+			return div;
+		}
+
+		else if (revealPokemon)
+		{
+			img = $('<img src=\"'+fighter.imgsrc+'\" style=\"width:180px; z-index:1;\"/>')
+			imgBall = $('<img src=\"assets/images/pokeball.jpg\" style=\"width:180px; z-index:2;position:absolute\"/>') 
+			name = $('<p>'+fighter.name+'</p>')
+			hp = $('<p>hp: '+fighter.hp.toFixed(2)+'</p>')
+
+			revealPokemon = false
+
+			div.append(name)
+			div.append(imgBall)
+			div.append(img)
+			div.append(hp)
+
+			imgBall.fadeOut('slow')
+			fighter.imgclass = x
+			img.attr("class", fighter.imgclass)
+			div.attr("class", "fighterDiv")
+
+			return div;
 		}
 
 		else
@@ -106,17 +143,17 @@ $(document).ready(function()
 			img = $('<img src=\"'+fighter.imgsrc+'\" style=\"width:180px;\"/>')
 			name = $('<p>'+fighter.name+'</p>')
 			hp = $('<p>hp: '+fighter.hp.toFixed(2)+'</p>')
+
+			div.append(name)
+			div.append(img)
+			div.append(hp)
+
+			fighter.imgclass = x
+			img.attr("class", fighter.imgclass)
+			div.attr("class", "fighterDiv")
+
+			return div;
 		}
-
-		div.append(name)
-		div.append(img)
-		div.append(hp)
-
-		fighter.imgclass = x
-		img.attr("class", fighter.imgclass)
-		div.attr("class", "fighterDiv")
-
-		return div;
 	}
 
 	function populateEnemies(row, array, condition)
@@ -398,15 +435,14 @@ $(document).ready(function()
 				normalAttack()
 			}
 
-			var userPercent = 100*usersFighter.hp/userMaxHP.toFixed(2)+'%'
-			var enemyPercent = 100*currentEnemy.hp/currentEnemyMaxHP.toFixed(2)+'%'
+			var userPercent = (100*usersFighter.hp/userMaxHP).toFixed(2)
+			var enemyPercent = (100*currentEnemy.hp/currentEnemyMaxHP).toFixed(2)
 			console.log(userPercent)
-			userHealthBar.css('width', userPercent)
-			currentEnemyHealthBar.css('width', enemyPercent)
-			userHealthPercent.html(userPercent)
-			enemyHealthPercent.html(enemyPercent)
-			/*enemyHealthPercent.html(100*currentEnemy.hp/currentEnemyMaxHP+'%')
-*/
+			userHealthBar.css('width', userPercent+'%')
+			currentEnemyHealthBar.css('width', enemyPercent+'%')
+			userHealthPercent.html(userPercent+'%')
+			enemyHealthPercent.html(enemyPercent+'%')
+
 			changeHealthBarColor()
 
 			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
