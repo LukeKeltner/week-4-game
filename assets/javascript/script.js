@@ -398,12 +398,15 @@ $(document).ready(function()
 				normalAttack()
 			}
 
-
-			userHealthBar.css('width', 100*usersFighter.hp/userMaxHP+'%')
-			currentEnemyHealthBar.css('width', 100*currentEnemy.hp/currentEnemyMaxHP+'%')
-			/*userHealthPercent.html(100*userFighter.hp/userMaxHP+'%')
-			enemyHealthPercent.html(100*currentEnemy.hp/currentEnemyMaxHP+'%')*/
-
+			var userPercent = 100*usersFighter.hp/userMaxHP.toFixed(2)+'%'
+			var enemyPercent = 100*currentEnemy.hp/currentEnemyMaxHP.toFixed(2)+'%'
+			console.log(userPercent)
+			userHealthBar.css('width', userPercent)
+			currentEnemyHealthBar.css('width', enemyPercent)
+			userHealthPercent.html(userPercent)
+			enemyHealthPercent.html(enemyPercent)
+			/*enemyHealthPercent.html(100*currentEnemy.hp/currentEnemyMaxHP+'%')
+*/
 			changeHealthBarColor()
 
 			var updateUser = fighterDiv(usersFighter, usersFighter.imgclass)
