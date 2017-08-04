@@ -46,6 +46,8 @@ $(document).ready(function()
 	var newColAttack;
 	var userHealthBar = $('#userHealthBar');
 	var currentEnemyHealthBar = $('#currentEnemyHealthBar');
+	var userHealthPercent = $('.user-health-percent');
+	var enemyHealthPercent = $('.enemy-health-percent');
 
 	function fighter(name, hp, attack, counter, imgsrc, imgclass, type, typeName, strongAgainst, weakAgainst)
 	{
@@ -183,10 +185,11 @@ $(document).ready(function()
 		newDiv1.attr("class", "fighterDiv usersFighter")
 		newCol1.html(newDiv1)
 
-		$('.user-progress-container').show()
 		userHealthBar.css('width', '100%')
 		userHealthBar.show()
 		userMaxHP = usersFighter.hp;
+		userHealthPercent.html(100*usersFighter.hp/userMaxHP+'%')
+		userHealthPercent.show()
 
 		var attackButton = $('#attack')
 		newColAttack.append(attackButton)
@@ -237,6 +240,8 @@ $(document).ready(function()
 		currentEnemyHealthBar.css('width', '100%')
 		currentEnemyHealthBar.show()
 		currentEnemyMaxHP = currentEnemy.hp;
+		enemyHealthPercent.html(100*currentEnemy.hp/currentEnemyMaxHP+'%')
+		enemyHealthPercent.show()
 	}
 
 	function hoverTypesInfo(textClass, imgClass)
@@ -393,8 +398,11 @@ $(document).ready(function()
 				normalAttack()
 			}
 
+
 			userHealthBar.css('width', 100*usersFighter.hp/userMaxHP+'%')
 			currentEnemyHealthBar.css('width', 100*currentEnemy.hp/currentEnemyMaxHP+'%')
+			/*userHealthPercent.html(100*userFighter.hp/userMaxHP+'%')
+			enemyHealthPercent.html(100*currentEnemy.hp/currentEnemyMaxHP+'%')*/
 
 			changeHealthBarColor()
 
