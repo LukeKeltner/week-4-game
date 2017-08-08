@@ -1,12 +1,3 @@
-//Electric Type = 0
-//Fire Type = 1
-//Water Type = 2
-//Grass Type = 3
-
-
-
-
-
 
 $(document).ready(function() 
 {
@@ -29,15 +20,6 @@ $(document).ready(function()
 	fighterArray.push(fighter3)
 	fighterArray.push(fighter4)
 
-	//Putthing the Pokemon in random order
-	for (var i=0; i<fighterArray.length; i++)
-	{
-		var r = Math.floor(Math.random()*fighterArray.length)
-		enemies.push(fighterArray[r])
-		fighterArray.splice(r, 1)
-		i = i - 1
-	}
-
 	var userMaxHP;
 	var currentEnemyMaxHP;
 
@@ -50,6 +32,15 @@ $(document).ready(function()
 	var userHealthPercent = $('.user-health-percent');
 	var enemyHealthPercent = $('.enemy-health-percent');
 
+	//Putthing the Pokemon in random order
+	for (var i=0; i<fighterArray.length; i++)
+	{
+		var r = Math.floor(Math.random()*fighterArray.length)
+		enemies.push(fighterArray[r])
+		fighterArray.splice(r, 1)
+		i = i - 1
+	}
+
 	function fighter(name, hp, attack, counter, imgsrc, imgclass, type, typeName, strongAgainst, weakAgainst)
 	{
 		this.name = name;
@@ -58,7 +49,7 @@ $(document).ready(function()
 		this.counter = counter;
 		this.imgsrc = imgsrc;
 		this.imgclass = imgclass;
-		this.type = type;
+		this.type = type;  //Electric = 0, Fire = 1, Water = 2, Grass = 3
 		this.typeName = typeName;
 		this.strongAgainst = strongAgainst;
 		this.weakAgainst = weakAgainst;
@@ -92,6 +83,7 @@ $(document).ready(function()
 
 	}
 
+	//Creating the Fighter Cards
 	function fighterDiv(fighter, x)
 	{
 		var div = $('<div style=\'position:relative\'>')
@@ -99,6 +91,7 @@ $(document).ready(function()
 		var img;
 		var hp;
 
+		//If it's the start of the game, the user picks a random Pokeball.
 		if (userNeedsToPickFighter)
 		{
 			img = $('<img src=\"assets/images/pokeball.jpg\" style=\"width:180px;\"/>') 
@@ -116,6 +109,7 @@ $(document).ready(function()
 			return div;
 		}
 
+		//Reveals the Pokemon by a fading out the Pokeball image
 		else if (revealPokemon)
 		{
 			img = $('<img src=\"'+fighter.imgsrc+'\" style=\"width:180px; z-index:1;\"/>')
@@ -156,12 +150,15 @@ $(document).ready(function()
 		}
 	}
 
+	//Populates row2 with all waiting enemies.
 	function populateEnemies(row, array, condition)
 	{
+
+		//Since the user hasn't picked a fighter yet, we don't add the "Your Enemies" text
 		if (!condition)
 		{
+			clearHTMLElement(row)
 			var colWidth = 12/(array.length); 
-			clearRow(row)
 
 			for (var i=0; i<array.length; i++)
 			{
@@ -176,9 +173,10 @@ $(document).ready(function()
 			}
 		}
 
+		//However, once user has picked a fighter, we add one more column than there are enemies for this text.
 		else
 		{	
-			clearRow(row)
+			clearHTMLElement(row)
 			var colWidth = 12/(array.length+1); 
 			var colString = "col-md-"+colWidth
 			var colClass = "class = \""+colString+" text-center\""
@@ -203,14 +201,15 @@ $(document).ready(function()
 		}
 	}
 
-	function clearRow(row)
+	function clearHTMLElement(row)
 	{
 		$(row).empty();
 	}
 
+	//Places the User's fighter in the left of row1
 	function placeUser()
 	{
-		clearRow('.row1')
+		clearHTMLElement('.row1')
 		var newCol1 = $("<div class=\"col-md-4 text-center\">")
 		newColAttack = $("<div class=\"col-md-4 text-center\">")
 		var newCol2 = $("<div class=\"col-md-4 text-center\">")
@@ -222,20 +221,24 @@ $(document).ready(function()
 		newDiv1.attr("class", "fighterDiv usersFighter")
 		newCol1.html(newDiv1)
 
+		//Fills the User's health bar.
 		userHealthBar.css('width', '100%')
 		userHealthBar.show()
 		userMaxHP = usersFighter.hp;
 		userHealthPercent.html(100*usersFighter.hp/userMaxHP+'%')
 		userHealthPercent.show()
 
+		//Creates the attack button
 		var attackButton = $('#attack')
 		newColAttack.append(attackButton)
 		attackButton.show()
 
+		//This is where it will be said if the attack is effective or not
 		var attackResult = $('<h2>')
 		attackResult.attr('class', 'attackResult')
 		newColAttack.append(attackResult)
 
+		//Display's the fighters' attack multiplier
 		var userMultiplier = $('<h2>')
 		userMultiplier.attr('class', 'userMultiplier')
 		var enemyMultiplier = $('<h2>')
@@ -267,6 +270,7 @@ $(document).ready(function()
 
 	}
 
+	//Defines the current enemy and places the fighter card to the right on row1
 	function getCurrentEnemy()
 	{
 		var enemyFighterDiv = fighterDiv(currentEnemy, currentEnemy.imgclass)
@@ -281,6 +285,7 @@ $(document).ready(function()
 		enemyHealthPercent.show()
 	}
 
+	//Fade's in and out the different Pokemon types descriptions.  
 	function hoverTypesInfo(textClass, imgClass)
 	{
 		$(textClass).hover(function() 
@@ -294,6 +299,7 @@ $(document).ready(function()
 		});
 	}
 
+	//Called when a normal attack happens.
 	function normalAttack()
 	{
 		var multiplier1 = Math.random().toFixed(2);
@@ -307,6 +313,7 @@ $(document).ready(function()
 		$('.enemyMultiplier').html(currentEnemy.name+" damage x"+multiplier2)
 	}
 
+	//Called when a super effective attack happens.
 	function superEffective()
 	{
 		var multiplier1 = Math.random().toFixed(2);
@@ -320,6 +327,7 @@ $(document).ready(function()
 		$('.enemyMultiplier').html(currentEnemy.name+" damage x"+multiplier2)
 	}
 
+	//Called when a not very effec tive attack happens.
 	function notVeryrEffective()
 	{
 		var multiplier1 = Math.random().toFixed(2);
@@ -333,8 +341,10 @@ $(document).ready(function()
 		$('.enemyMultiplier').html(currentEnemy.name+" damage x"+multiplier2)
 	}
 
-	populateEnemies(".row1", enemies)
+	//In itial population of fighters (covered up with Pokeballs)
+	populateEnemies(".row1", enemies, false)
 
+	//Figuring out which fighter the user clicked to define their fighter. 
 	$('.row1').on('click', function()
 	{
 		if (userNeedsToPickFighter)
@@ -364,6 +374,7 @@ $(document).ready(function()
 		}
 	})
 
+	//Clicking on an enemy to fight.
 	$('.row2').on('click', function()
 	{
 		if (userNeedsToPickEnemy)
@@ -388,18 +399,20 @@ $(document).ready(function()
 
 			if (enemies.length === 0)
 			{
-				clearRow('.fightEnemies')
-				clearRow('.row2')
+				clearHTMLElement('.fightEnemies')
+				clearHTMLElement('.row2')
 			}
 		}
 	});
 
+	//The attack button being clicked. 
 	$('#attack').on('click', function()
 	{
 		if (!userNeedsToPickEnemy)
 		{
 			var attackHappened = false;
 
+			//Checking to see if the types/strengths/weakness merit a special attack by looping through enemy's weaknesses
 			for (var weakness = 0; weakness < currentEnemy.weakAgainst.length; weakness++)
 			{	
 				if (usersFighter.type === currentEnemy.weakAgainst[weakness])
@@ -419,6 +432,7 @@ $(document).ready(function()
 
 			if (!attackHappened)
 			{
+				//Checking to see if the types/strengths/weakness merit a special attack by looping through user's weaknesses
 				for (var weakness = 0; weakness < usersFighter.weakAgainst.length; weakness++)
 				{
 					if (usersFighter.weakAgainst[weakness] === currentEnemy.type)
@@ -430,11 +444,13 @@ $(document).ready(function()
 				}
 			}
 
+			//If attackedHappened is still false from above, it means a normal attack will occur.
 			if (!attackHappened)
 			{
 				normalAttack()
 			}
 
+			//Displaying hit points, what type of attack, and health bar stats.
 			var userPercent = (100*usersFighter.hp/userMaxHP).toFixed(2)
 			var enemyPercent = (100*currentEnemy.hp/currentEnemyMaxHP).toFixed(2)
 			console.log(userPercent)
@@ -450,9 +466,11 @@ $(document).ready(function()
 
 			var enemyFighterDiv = fighterDiv(currentEnemy, currentEnemy.imgclass)
 			enemyFighterDiv.attr("class", "fighterDiv currentEnemy")
+
 			$('.usersFighter').html(updateUser)
 			$('.currentEnemy').html(enemyFighterDiv)
 
+			//Jumbotron sayings for different situtations
 			if (currentEnemy.hp <= 0 && usersFighter.hp >0)
 			{
 				if (enemies.length === 1)
@@ -466,21 +484,22 @@ $(document).ready(function()
 				}
 
 				userNeedsToPickEnemy = true;
-				clearRow('.attackResult')
-				clearRow('.currentEnemy');
+				clearHTMLElement('.attackResult')
+				clearHTMLElement('.currentEnemy');
 				
 
 				if(enemies.length === 0)
 				{
-					clearRow('.youlose');
-					clearRow(newColAttack);
+					clearHTMLElement(enemyHealthPercent)
+					clearHTMLElement('.youlose');
+					clearHTMLElement(newColAttack);
 					instructions.html("You've Won!")
 				}
 			}
 
 			if (usersFighter.hp <= 0)
 			{
-				clearRow(newColAttack);
+				clearHTMLElement(newColAttack);
 				instructions.html("You've Lost!")
 			}
 		}
